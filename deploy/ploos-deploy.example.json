@@ -1,0 +1,6 @@
+{
+  "name": "ploos-domains",
+  "image": "ghcr.io/ploos-as/ploos-domains@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "port": 18088,
+  "health_path": "/healthz"
+}
