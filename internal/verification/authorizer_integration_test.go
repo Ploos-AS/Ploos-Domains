@@ -35,7 +35,13 @@ func TestPostgresAuthorizer(t *testing.T) {
  _,err=db.ExecContext(ctx,`INSERT INTO memberships(id,user_id,organization_id,role) VALUES($1,$2,$3,'viewer')`,membership,actor,orgID)
  if err!=nil{t.Fatal(err)}
  check(orgID,domain,false)
- _,err=db.ExecContext(ctx,"UPDATE memberships SET role='admin' WHERE id=$1",membership)
+ unit:=newUUID(t)
+ _,err=db.ExecContext(ctx,"INSERT INTO units(id,organization_id,name) VALUES($1,$2,'Test unit')",unit,orgID)
+ if err!=nil{t.Fatal(err)}
+ _,err=db.ExecContext(ctx,"UPDATE memberships SET unit_id=$2,role='unit_admin' WHERE id=$1",membership,unit)
+ if err!=nil{t.Fatal(err)}
+ check(orgID,domain,false)
+ _,err=db.ExecContext(ctx,"UPDATE memberships SET unit_id=NULL,role='admin' WHERE id=$1",membership)
  if err!=nil{t.Fatal(err)}
  check(orgID,domain,true)
  check(otherOrgID,otherDomain,false)
