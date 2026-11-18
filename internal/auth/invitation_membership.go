@@ -54,6 +54,10 @@ func (s InvitationMembership) Redeem(ctx context.Context, token string, identity
  n,err:=result.RowsAffected()
  if err!=nil{return "",err}
  if n!=1{return "",ErrInvitationUnavailable}
+ if err=(AuditRecorder{DB:s.DB}).RecordTx(ctx,tx,AuditEvent{
+  OrganizationID:orgID,ActorUserID:userID,TargetUserID:userID,
+  Type:AuditInvitationRedeemed,OccurredAt:time.Now().UTC(),
+ });err!=nil{return "",fmt.Errorf("audit redemption: %w",err)}
  if err=tx.Commit();err!=nil{return "",fmt.Errorf("commit redemption: %w",err)}
  return orgID,nil
 }
