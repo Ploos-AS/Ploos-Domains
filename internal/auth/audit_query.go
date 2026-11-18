@@ -42,7 +42,7 @@ func (q AuditQuery) List(ctx context.Context,actorID,organizationID string,limit
  if cursor!=nil&&(cursor.ID==""||cursor.OccurredAt.IsZero()){
   return AuditPage{},ErrInvalidAuditQuery
  }
- tx,err:=q.DB.BeginTx(ctx,&sql.TxOptions{ReadOnly:true,Isolation:sql.LevelReadCommitted})
+ tx,err:=q.DB.BeginTx(ctx,&sql.TxOptions{Isolation:sql.LevelReadCommitted})
  if err!=nil{return AuditPage{},fmt.Errorf("begin audit query: %w",err)}
  defer func(){_ = tx.Rollback()}()
  var role string
