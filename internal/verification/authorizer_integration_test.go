@@ -14,8 +14,8 @@ func TestPostgresAuthorizer(t *testing.T) {
  db:=openIntegrationDB(t)
  ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second)
  defer cancel()
- org,domain,_:=setupVerification(t,db,time.Now().Add(time.Hour))
- otherOrg,otherDomain,_:=setupVerification(t,db,time.Now().Add(time.Hour))
+ domain,_,_:=setupVerification(t,db,time.Now().Add(time.Hour))
+ otherDomain,_,_:=setupVerification(t,db,time.Now().Add(time.Hour))
  actor:=newUUID(t)
  _,err:=db.ExecContext(ctx,"INSERT INTO users(id,external_subject) VALUES($1,$2)",actor,"integration-"+actor)
  if err!=nil {t.Fatal(err)}
@@ -23,7 +23,6 @@ func TestPostgresAuthorizer(t *testing.T) {
  var orgID,otherOrgID string
  if err:=db.QueryRowContext(ctx,"SELECT organization_id::text FROM domains WHERE id=$1",domain).Scan(&orgID);err!=nil{t.Fatal(err)}
  if err:=db.QueryRowContext(ctx,"SELECT organization_id::text FROM domains WHERE id=$1",otherDomain).Scan(&otherOrgID);err!=nil{t.Fatal(err)}
- _=org;_=otherOrg
  auth:=PostgresAuthorizer{DB:db}
  check:=func(o,d string,want bool){
   t.Helper()
