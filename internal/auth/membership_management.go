@@ -5,6 +5,7 @@ import (
  "database/sql"
  "errors"
  "fmt"
+ "time"
 )
 
 var (
@@ -47,6 +48,10 @@ func (m MembershipManager) Grant(ctx context.Context,actorID,organizationID,targ
  RETURNING id::text`,id,targetID,organizationID,role).Scan(&created)
  if errors.Is(err,sql.ErrNoRows){return ErrMembershipExists}
  if err!=nil{return fmt.Errorf("insert membership: %w",err)}
+ if err:=(AuditRecorder{DB:m.DB}).RecordTx(ctx,tx,AuditEvent{
+  OrganizationID:organizationID,ActorUserID:actorID,TargetUserID:targetID,
+  Type:AuditMembershipGranted,OccurredAt:time.Now().UTC(),
+ });err!=nil{return fmt.Errorf("audit membership grant: %w",err)}
  if err:=tx.Commit();err!=nil{return fmt.Errorf("commit membership grant: %w",err)}
  return nil
 }

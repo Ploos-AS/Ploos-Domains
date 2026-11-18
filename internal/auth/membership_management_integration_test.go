@@ -31,7 +31,10 @@ func TestMembershipGrantsPostgres(t *testing.T){
   defer db.ExecContext(context.Background(),"DELETE FROM users WHERE id=$1",id)
  }
  if _,err:=db.ExecContext(ctx,"INSERT INTO organizations(id,name) VALUES($1,'Membership integration')",org);err!=nil{t.Fatal(err)}
- defer db.ExecContext(context.Background(),"DELETE FROM organizations WHERE id=$1",org)
+ defer func(){
+  _,_=db.ExecContext(context.Background(),"DELETE FROM audit_events WHERE organization_id=$1",org)
+  _,_=db.ExecContext(context.Background(),"DELETE FROM organizations WHERE id=$1",org)
+ }()
  for _,tc:=range []struct{id,role string}{{owner,"owner"},{admin,"admin"},{viewer,"viewer"}}{
   membershipID,_:=randomUUID()
   if _,err:=db.ExecContext(ctx,"INSERT INTO memberships(id,user_id,organization_id,role) VALUES($1,$2,$3,$4)",membershipID,tc.id,org,tc.role);err!=nil{t.Fatal(err)}
@@ -45,4 +48,7 @@ func TestMembershipGrantsPostgres(t *testing.T){
  var role string
  if err:=db.QueryRowContext(ctx,"SELECT role FROM memberships WHERE organization_id=$1 AND user_id=$2 AND unit_id IS NULL",org,target).Scan(&role);err!=nil{t.Fatal(err)}
  if role!="admin"{t.Fatalf("existing role overwritten: %s",role)}
+ var events int
+ if err:=db.QueryRowContext(ctx,"SELECT count(*) FROM audit_events WHERE organization_id=$1 AND actor_user_id=$2 AND target_user_id=$3 AND event_type=$4",org,owner,target,string(AuditMembershipGranted)).Scan(&events);err!=nil{t.Fatal(err)}
+ if events!=1{t.Fatalf("membership audit events=%d",events)}
 }
