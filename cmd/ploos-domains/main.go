@@ -1,20 +1,23 @@
 package main
 
 import (
+ "context"
  "log"
  "net/http"
  "os"
  "time"
 
- "github.com/Ploos-AS/Ploos-Domains/internal/server"
 )
 
 func main() {
  addr := os.Getenv("PLOOS_LISTEN_ADDR")
  if addr == "" { addr = ":8080" }
+ handler,closeDB,err:=buildHandler(context.Background())
+ if err!=nil{log.Fatal(err)}
+ defer closeDB()
  srv := &http.Server{
   Addr: addr,
-  Handler: server.NewHandler(),
+  Handler: handler,
   ReadHeaderTimeout: 5 * time.Second,
   ReadTimeout: 15 * time.Second,
   WriteTimeout: 15 * time.Second,
