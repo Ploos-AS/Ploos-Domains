@@ -49,8 +49,8 @@ func TestInvitationConsumptionPostgres(t *testing.T) {
   invitationID,err:=randomUUID()
   if err!=nil{t.Fatal(err)}
   _,err=db.ExecContext(ctx,`INSERT INTO enrollment_invitations
-  (id,token_sha256,organization_id,invited_issuer,invited_subject,expires_at)
-  VALUES($1,$2,$3,$4,$5,$6)`,invitationID,digest[:],orgID,identity.Issuer,identity.Subject,expires)
+  (id,token_sha256,organization_id,invited_issuer,invited_subject,created_at,expires_at)
+  VALUES($1,$2,$3,$4,$5,$6,$7)`,invitationID,digest[:],orgID,identity.Issuer,identity.Subject,now.Add(-2*time.Hour),expires)
   if err!=nil{t.Fatal(err)}
   return token
  }
