@@ -69,6 +69,10 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f db/migrations/000005_enrollment_invitations.up.sql
       - name: Verify invitation constraints
         run: psql -v ON_ERROR_STOP=1 -f db/tests/000005_enrollment.sql
+      - name: Apply audit event schema
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/000006_audit_events.up.sql
+      - name: Verify audit event constraints
+        run: psql -v ON_ERROR_STOP=1 -f db/tests/000006_audit_events.sql
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
