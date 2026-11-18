@@ -17,6 +17,8 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+      - name: Resolve Go modules
+        run: go mod tidy
       - name: Vet
         run: go vet ./...
       - name: Test
@@ -63,6 +65,8 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+      - name: Resolve Go modules
+        run: go mod tidy
       - name: Go PostgreSQL integration tests
         env:
           PLOOS_TEST_DATABASE_URL: postgres://ploos:test-only-password@localhost:5432/ploos_domains_test?sslmode=disable
