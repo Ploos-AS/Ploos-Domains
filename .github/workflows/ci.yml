@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Apply OIDC identity schema
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/000004_oidc_identities.up.sql
+      - name: Verify OIDC identity isolation
+        run: psql -v ON_ERROR_STOP=1 -f db/tests/000004_oidc_identities.sql
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
