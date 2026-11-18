@@ -65,6 +65,10 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f db/migrations/000004_oidc_identities.up.sql
       - name: Verify OIDC identity isolation
         run: psql -v ON_ERROR_STOP=1 -f db/tests/000004_oidc_identities.sql
+      - name: Apply invitation schema
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/000005_enrollment_invitations.up.sql
+      - name: Verify invitation constraints
+        run: psql -v ON_ERROR_STOP=1 -f db/tests/000005_enrollment.sql
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
