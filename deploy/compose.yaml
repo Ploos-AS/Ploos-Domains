@@ -1,0 +1,19 @@
+services:
+  domains:
+    image: ${PLOOS_DOMAINS_IMAGE:?Set a pinned image digest}
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    environment:
+      PLOOS_LISTEN_ADDR: ":8080"
+      PLOOS_AUDIT_API_ENABLED: "${PLOOS_AUDIT_API_ENABLED:-false}"
+      PLOOS_OIDC_ISSUER: "${PLOOS_OIDC_ISSUER:-}"
+      PLOOS_OIDC_AUDIENCE: "${PLOOS_OIDC_AUDIENCE:-}"
+      PLOOS_DATABASE_URL: "${PLOOS_DATABASE_URL:-}"
+    ports:
+      - "127.0.0.1:8088:8080"
