@@ -77,6 +77,8 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f db/security/audit_roles.sql
       - name: Verify audit role privileges
         run: psql -v ON_ERROR_STOP=1 -f db/security/test_audit_roles.sql
+      - name: Verify audit API least-privilege role
+        run: psql -v ON_ERROR_STOP=1 -f db/security/test_audit_api_role.sql
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
