@@ -52,8 +52,13 @@ func NewChallenge(domain string, now time.Time, ttl time.Duration) (Challenge,er
 // atomically with challenge consumption by the persistence layer.
 func Verify(ctx context.Context, resolver TXTResolver, name string, expected [32]byte, expiresAt,timeNow time.Time) error {
  if resolver==nil || !timeNow.Before(expiresAt) { return ErrExpired }
- canonical,err:=domains.CanonicalName(name)
- if err!=nil || !strings.HasPrefix(canonical,Prefix+".") { return ErrInvalid }
+ // DNS TXT owner names may contain underscores, even though host labels
+ // do not. Validate the fixed service prefix separately from the zone.
+ normalized:=strings.TrimSuffix(strings.ToLower(name),".")
+ if !strings.HasPrefix(normalized,Prefix+".") { return ErrInvalid }
+ zone,err:=domains.CanonicalName(strings.TrimPrefix(normalized,Prefix+"."))
+ if err!=nil { return ErrInvalid }
+ canonical:=Prefix+"."+zone
  records,err:=resolver.LookupTXT(ctx,canonical)
  if err!=nil { return fmt.Errorf("lookup TXT: %w",err) }
  for _,record:=range records {
