@@ -14,8 +14,8 @@ func TestPostgresAuthorizer(t *testing.T) {
  db:=openIntegrationDB(t)
  ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second)
  defer cancel()
- _,domain,_:=setupVerification(t,db,time.Now().Add(time.Hour))
- _,otherDomain,_:=setupVerification(t,db,time.Now().Add(time.Hour))
+ domain,_,_:=setupVerification(t,db,time.Now().Add(time.Hour))
+ otherDomain,_,_:=setupVerification(t,db,time.Now().Add(time.Hour))
  actor:=newUUID(t)
  _,err:=db.ExecContext(ctx,"INSERT INTO users(id,external_subject) VALUES($1,$2)",actor,"integration-"+actor)
  if err!=nil {t.Fatal(err)}
