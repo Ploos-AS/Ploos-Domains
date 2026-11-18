@@ -33,7 +33,9 @@ func TestAuthMiddleware(t *testing.T){
     if !ok||id!=valid{t.Fatal("missing verified identity")}
     w.WriteHeader(200)
    })
-   h:=Middleware(tc.verifier,next)
+   var verifier Verifier
+   if tc.verifier!=nil { verifier=tc.verifier }
+   h:=Middleware(verifier,next)
    req:=httptest.NewRequest("GET","/",nil)
    if tc.header!=""{req.Header.Set("Authorization",tc.header)}
    rec:=httptest.NewRecorder()
