@@ -2,7 +2,6 @@ package server
 
 import (
  "context"
- "errors"
  "net/http"
  "net/http/httptest"
  "testing"
@@ -45,5 +44,4 @@ func TestAuditHandlerSecurity(t *testing.T){
   if tc.calls==1&&(lister.actor!="trusted-user"||lister.org!="trusted-org"){t.Fatal("untrusted actor or organization")}
   if tc.want==200&&rr.Header().Get("Cache-Control")!="no-store"{t.Fatal("missing no-store")}
  })}
- if !errors.Is(auth.ErrAuditAccessDenied,auth.ErrAuditAccessDenied){t.Fatal("unexpected")}
 }
