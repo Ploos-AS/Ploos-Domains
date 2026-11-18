@@ -1,44 +1,71 @@
-# Roadmap
+# Ploos Domains roadmap
 
-## Phase 0 — Foundation
+Ploos Domains is an independent product in the broader [Ploos Hosting portfolio](https://github.com/Ploos-AS/Ploos-Hosting). This roadmap tracks **implemented foundations** separately from the **unreleased product experience**. Checked items indicate repository-level implementation, **not production deployment or full feature readiness**.
 
-- [x] Define product boundaries and MIT licensing.
-- [x] Document modular architecture and authorization principles.
-- [ ] Establish Go project layout, static checks and CI.
-- [ ] Agree on API contract and initial schema.
+## Phase 0 — Foundation and persistence
 
-## Phase 1 — Organizations and subdomains (MVP)
+- [x] Define open-source MIT scope and modular architecture.
+- [x] Establish Go application, CI, PostgreSQL migrations and integration tests.
+- [x] Add organization, unit, user and membership schema.
+- [x] Add subdomain allocation constraints and verification persistence.
 
-- [ ] Organization/unit hierarchy and scoped membership.
-- [ ] Domain inventory and proof of control.
-- [ ] Atomic allocation of chapter subdomains; reject collisions.
-- [ ] Role and resource policy tests (including cross-tenant attacks).
-- [ ] DNS changes as dry-run proposals, review and immutable audit records.
-- [ ] First external DNS provider adapter in a sandbox.
-- [ ] English and Norwegian UI.
+## Phase 1 — Domain control and authorization foundations
 
-## Phase 2 — DNS platform
+- [x] Add DNS TXT challenge generation and domain-control verification service.
+- [x] Add PostgreSQL challenge repository and concurrent integration tests.
+- [x] Add organization-scoped domain authorization checks.
+- [x] Add OIDC ID-token verification middleware and OIDC-to-internal-user mapping.
+- [x] Add invitation-based enrollment, membership grants and audited invitation redemption.
+- [x] Add append-oriented audit events and atomic audit recording in selected mutation paths.
+- [x] Add organization-scoped, paginated audit query and authenticated HTTP endpoint.
+- [x] Add opt-in server wiring, rate limiting, security headers and database privilege checks.
+- [ ] Complete end-to-end tenant-security review, error handling and security tests.
+- [ ] Review all legacy unaudited mutation paths and enforce approved audited paths.
+- [ ] Confirm OAuth2 access-token vs OIDC ID-token model before exposing customer APIs.
 
-- [ ] Provider abstraction and additional adapters.
-- [ ] Record templates, change history and safe restore workflows.
-- [ ] Monitoring via Voqryn; DNSSEC and email-DNS health checks.
-- [ ] Self-service organization portal.
+## Phase 2 — Deployment and pilot
 
-## Phase 3 — Domain commerce
+- [x] Add Dockerfile, loopback-bound Compose deployment skeleton and container build in CI.
+- [x] Add GHCR image-publishing workflow and immutable digest guidance.
+- [ ] Integrate verified image digests, secrets, health checks and rollback with Ploos Deploy.
+- [ ] Set up real `domains.ploos.no` routing, TLS, monitoring and backups.
+- [ ] Deploy PostgreSQL migrations, dedicated least-privilege users and test restores.
+- [ ] Validate running service with end-to-end OIDC and domain verification tests.
+- [ ] Define incident response, retention and operational ownership.
 
-- [ ] Registrar/reseller partner evaluation and agreements.
-- [ ] Domain registration, transfer, renewal and billing adapters.
-- [ ] Customer ownership and lifecycle controls.
+## Phase 3 — User-facing organization and DNS MVP
 
-## Phase 4 — Advanced infrastructure
+- [ ] Complete OpenAPI contract, errors and API surface for organizations/domains.
+- [ ] Deliver bilingual English/Norwegian UI and usable self-service flows.
+- [ ] Complete scoped chapter/branch delegated administration and abuse tests.
+- [ ] Implement DNS dry-run proposals, approval, safe execution and audited restore planning.
+- [ ] Integrate first external DNS provider in sandbox; never change customer records silently.
+- [ ] Confirm product-level activation and cancellation independence from Ploos Web/Mail.
 
-- [ ] Optional redundant authoritative DNS infrastructure.
-- [ ] Genuine NS delegation for chapter-owned zones.
-- [ ] White-label services and developer APIs.
+## Phase 4 — DNS provider platform and integrations
+
+- [ ] Provider abstraction and additional DNS adapters.
+- [ ] DNS templates and safe provider synchronization.
+- [ ] Voqryn-powered monitoring, DNSSEC checks and mail-DNS health checks.
+- [ ] Integration with Ploos Web, Mail, Workspace and Apps through explicit approved workflows.
+
+## Phase 5 — Domain commerce
+
+- [ ] Evaluate registrar/reseller agreements.
+- [ ] Add registration, transfer and renewal workflows.
+- [ ] Add billing and independent customer lifecycle management.
+
+## Phase 6 — Optional advanced infrastructure
+
+- [ ] Evaluate redundant authoritative DNS hosting (not required for MVP).
+- [ ] Support true NS delegation for chapter zones when justified.
+- [ ] Add white-label and advanced developer APIs.
 
 ## Non-goals for v1
 
-- Becoming an ICANN-accredited registrar on day one.
-- Moving a customer's nameservers automatically.
+- ICANN accreditation or independent authoritative DNS as a launch prerequisite.
+- Automatically transferring a customer's nameservers.
+- Overwriting MX or other unrelated DNS records when provisioning web hosting.
 - Running a production DNS network on one VPS.
-- Charging per DNS record or subdomain as the primary pricing model.
+
+**Status note (2026-11-18):** The checked implementation milestones above reflect the merged foundational PRs through #31. The published GHCR workflow is a capability, not evidence that a usable customer portal or production service has been deployed. The full Ploos Hosting product strategy is maintained separately.
