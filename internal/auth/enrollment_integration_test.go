@@ -39,7 +39,10 @@ func TestInvitationConsumptionPostgres(t *testing.T) {
   identity:=Identity{Issuer:issuer,Subject:"enrollment-"+subject,Audience:"ploos-domains"}
   userID,err:=p.Provision(ctx,identity)
   if err!=nil{t.Fatal(err)}
-  t.Cleanup(func(){_,_=db.ExecContext(context.Background(),"DELETE FROM users WHERE id=$1",userID)})
+  t.Cleanup(func(){
+   _,_=db.ExecContext(context.Background(),"DELETE FROM enrollment_invitations WHERE consumed_by=$1",userID)
+   _,_=db.ExecContext(context.Background(),"DELETE FROM users WHERE id=$1",userID)
+  })
   return identity,userID
  }
  makeInvite:=func(t *testing.T,identity Identity,expires time.Time) string {
