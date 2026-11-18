@@ -10,7 +10,7 @@ The current `users.external_subject` schema requires a unique non-null legacy va
 
 ## Outstanding work
 
-- Integration tests with PostgreSQL for concurrency and rollback.
+- Integration tests cover concurrent provisioning and absence of implicit memberships; additional rollback/failure-injection tests remain to be added.
 - Enrollment policy (invite-only, approved organization or explicitly open signup).
 - Auditing, rate limiting, lifecycle management and identity linking controls.
 - Authenticated API access using appropriately scoped access tokens or secure sessions.
