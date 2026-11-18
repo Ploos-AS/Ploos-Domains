@@ -2,6 +2,7 @@ package server
 
 import (
  "net/http"
+ "time"
 
  "github.com/Ploos-AS/Ploos-Domains/internal/auth"
 )
@@ -13,7 +14,8 @@ func NewHandlerWithAudit(verifier auth.Verifier,resolver AuditIdentityResolver,l
  base:=NewHandler()
  if verifier==nil||resolver==nil||lister==nil{return base}
  mux:=http.NewServeMux()
- mux.Handle(AuditRoute,auth.Middleware(verifier,NewAuditHandler(resolver,lister)))
+ limiter:=newAuditLimiter(60,60,time.Now)
+ mux.Handle(AuditRoute,limiter.wrap(auth.Middleware(verifier,NewAuditHandler(resolver,lister))))
  mux.Handle("/",base)
  return mux
 }
