@@ -55,3 +55,5 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f db/migrations/000002_subdomains.up.sql
       - name: Verify subdomain constraints
         run: psql -v ON_ERROR_STOP=1 -f db/tests/000002_subdomains.sql
+      - name: Apply verification schema
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/000003_domain_verification.up.sql
