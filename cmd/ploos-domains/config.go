@@ -41,5 +41,6 @@ func buildHandler(ctx context.Context)(http.Handler,func()error,error){
  pingCtx,cancel:=context.WithTimeout(ctx,5*time.Second)
  defer cancel()
  if err:=db.PingContext(pingCtx);err!=nil{_ = db.Close();return nil,nil,fmt.Errorf("audit database unavailable: %w",err)}
+ if err:=checkAuditPrivileges(pingCtx,db);err!=nil{_ = db.Close();return nil,nil,fmt.Errorf("audit database security check failed: %w",err)}
  return server.NewHandlerWithAudit(verifier,auth.IdentityRepository{DB:db},auth.AuditQuery{DB:db}),db.Close,nil
 }
