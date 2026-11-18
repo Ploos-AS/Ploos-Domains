@@ -26,7 +26,10 @@ func TestAtomicInvitationMembershipPostgres(t *testing.T){
  defer cancel()
  org,_:=randomUUID()
  if _,err:=db.ExecContext(ctx,"INSERT INTO organizations(id,name) VALUES($1,'Atomic redemption test')",org);err!=nil{t.Fatal(err)}
- defer db.ExecContext(context.Background(),"DELETE FROM organizations WHERE id=$1",org)
+ defer func(){
+  _,_=db.ExecContext(context.Background(),"DELETE FROM audit_events WHERE organization_id=$1",org)
+  _,_=db.ExecContext(context.Background(),"DELETE FROM organizations WHERE id=$1",org)
+ }()
  now:=time.Now().UTC()
  provisioner:=UserProvisioner{DB:db}
  setup:=func(t *testing.T)(Identity,string,string,[32]byte){
@@ -56,6 +59,9 @@ func TestAtomicInvitationMembershipPostgres(t *testing.T){
   var role string
   if err:=db.QueryRowContext(ctx,"SELECT role FROM memberships WHERE organization_id=$1 AND user_id=$2 AND unit_id IS NULL",org,uid).Scan(&role);err!=nil{t.Fatal(err)}
   if role!="viewer"{t.Fatalf("role=%s",role)}
+  var events int
+  if err:=db.QueryRowContext(ctx,"SELECT count(*) FROM audit_events WHERE organization_id=$1 AND actor_user_id=$2 AND event_type=$3",org,uid,string(AuditInvitationRedeemed)).Scan(&events);err!=nil{t.Fatal(err)}
+  if events!=1{t.Fatalf("redemption audit events=%d",events)}
   _,err=service.Redeem(ctx,token,identity,uid,now)
   if !errors.Is(err,ErrInvitationUnavailable){t.Fatalf("replay=%v",err)}
  })
