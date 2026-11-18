@@ -7,7 +7,6 @@ import (
  "errors"
  "net/http"
  "strconv"
- "strings"
  "time"
 
  "github.com/Ploos-AS/Ploos-Domains/internal/auth"
@@ -51,11 +50,6 @@ func encodeAuditCursor(c *auth.AuditCursor)string{
  raw,_:=json.Marshal(auditCursorWire{At:c.OccurredAt,ID:c.ID})
  return base64.RawURLEncoding.EncodeToString(raw)
 }
-func auditNullable(v interface{ }) *string{
- // This helper is intentionally not used for identity input.
- return nil
-}
-
 // NewAuditHandler returns an authenticated read-only handler.
 // Mount under GET /api/v1/organizations/{organizationID}/audit-events
 // and wrap it with auth.Middleware configured with a trusted verifier.
@@ -102,4 +96,3 @@ func NewAuditHandler(resolver AuditIdentityResolver,lister AuditLister)http.Hand
 // AuditRoute is an explicit path pattern for trusted server wiring.
 const AuditRoute = "GET /api/v1/organizations/{organizationID}/audit-events"
 
-var _ = strings.TrimSpace
