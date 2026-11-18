@@ -23,3 +23,31 @@ jobs:
         run: go test -race -count=1 ./...
       - name: Build
         run: go build ./cmd/ploos-domains
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ploos
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: ploos_domains_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ploos -d ploos_domains_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: ploos
+      PGPASSWORD: test-only-password
+      PGDATABASE: ploos_domains_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply initial schema
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/000001_initial.up.sql
+      - name: Verify database constraints
+        run: psql -v ON_ERROR_STOP=1 -f db/tests/000001_constraints.sql
