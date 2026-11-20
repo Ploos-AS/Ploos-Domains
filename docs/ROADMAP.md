@@ -63,8 +63,8 @@ Ploos Domains is an independent product in the broader [Ploos Hosting portfolio]
 
 ## Phase 5 — .no domain commerce and parking launch
 
-- [ ] Evaluate Norid registrar accreditation versus existing registrar/reseller agreements.
-- [ ] Integrate live .no availability, eligibility and first-year/renewal pricing.
+- [ ] Verify Domeneshop reseller agreement, API permissions and .no operations as the **first integration**; see [registrar strategy](REGISTRAR_STRATEGY.md).\n- [ ] Research direct Norid registrar accreditation as the **long-term target**, without assuming existing domains can be migrated automatically.
+- [ ] Implement a provider-neutral registrar contract and deterministic test adapter.\n- [ ] Integrate authorized Domeneshop .no availability, eligibility and first-year/renewal pricing once access is confirmed.
 - [ ] Implement idempotent registration orders, payment handling and asynchronous registrar reconciliation.
 - [ ] Add transfer-in/out, renewal, cancellation and billing workflows with independent customer lifecycle management.
 - [ ] Launch basic parking with reversible DNS changes; evaluate branded and for-sale landing pages.
