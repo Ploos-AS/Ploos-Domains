@@ -4,6 +4,10 @@
 
 Ploos Domains is an international, bilingual (English and Norwegian) platform developed by **Ploos AS**. Its distinctive feature is delegated management of subdomains for organizations with chapters, branches and teams.
 
+## Product vision
+
+**Norway-first commercial focus:** make finding, buying, parking, transferring and managing **.no domains** exceptionally simple, while retaining an international Norwegian/English architecture. Domain-only customers must not be required to purchase Web, Mail or Workspace. **Ploos DNS** is the separately usable DNS service, including for domains registered elsewhere. See [the .no domain commerce and parking vision](docs/NO_DOMAIN_COMMERCE.md). These are planned capabilities, not live registration services.
+
 ## Product areas
 
 - **Domains:** inventory, expiry and registrar/reseller adapters (later).

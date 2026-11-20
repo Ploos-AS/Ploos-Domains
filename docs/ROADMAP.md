@@ -33,7 +33,13 @@ Ploos Domains is an independent product in the broader [Ploos Hosting portfolio]
 - [ ] Validate running service with end-to-end OIDC and domain verification tests.
 - [ ] Define incident response, retention and operational ownership.
 
-## Phase 3 — User-facing organization and DNS MVP
+## Phase 3 — Customer-facing .no experience and organization/DNS MVP
+
+- [ ] Define mobile-first .no search, transparent pricing and domain-only checkout journeys.
+- [ ] Specify parking flows (default, branded and for-sale), including preview, HTTPS and explicit DNS consent.
+- [ ] Design customer domain portfolio, renewal notices, transfer-in/out and clear domain lifecycle status.
+- [ ] Confirm .no-specific eligibility, identity and registrar process requirements with Norid and a chosen partner.
+- [ ] Document first-release acceptance criteria in [the .no commerce and parking vision](NO_DOMAIN_COMMERCE.md).
 
 - [ ] Complete OpenAPI contract, errors and API surface for organizations/domains.
 - [ ] Deliver bilingual English/Norwegian UI and usable self-service flows.
@@ -42,18 +48,28 @@ Ploos Domains is an independent product in the broader [Ploos Hosting portfolio]
 - [ ] Integrate first external DNS provider in sandbox; never change customer records silently.
 - [ ] Confirm product-level activation and cancellation independence from Ploos Web/Mail.
 
-## Phase 4 — DNS provider platform and integrations
+## Phase 4 — Ploos DNS as a separately usable service
+
+- [ ] Define Ploos DNS as independently purchasable/usable with external registrars.
+- [ ] Separate registrar transfer, DNS provider change and authoritative DNS hosting in product flows.
+- [ ] Provide safe record editor, preview, templates, approval and audit history.
+
+## Phase 4a — DNS provider platform and integrations
 
 - [ ] Provider abstraction and additional DNS adapters.
 - [ ] DNS templates and safe provider synchronization.
 - [ ] Voqryn-powered monitoring, DNSSEC checks and mail-DNS health checks.
 - [ ] Integration with Ploos Web, Mail, Workspace and Apps through explicit approved workflows.
 
-## Phase 5 — Domain commerce
+## Phase 5 — .no domain commerce and parking launch
 
-- [ ] Evaluate registrar/reseller agreements.
-- [ ] Add registration, transfer and renewal workflows.
-- [ ] Add billing and independent customer lifecycle management.
+- [ ] Evaluate Norid registrar accreditation versus existing registrar/reseller agreements.
+- [ ] Integrate live .no availability, eligibility and first-year/renewal pricing.
+- [ ] Implement idempotent registration orders, payment handling and asynchronous registrar reconciliation.
+- [ ] Add transfer-in/out, renewal, cancellation and billing workflows with independent customer lifecycle management.
+- [ ] Launch basic parking with reversible DNS changes; evaluate branded and for-sale landing pages.
+- [ ] Validate accessible bilingual checkout, transparent pricing, abuse prevention and customer support readiness.
+- [ ] Extend to additional TLDs only after the .no workflows and provider abstraction are proven.
 
 ## Phase 6 — Optional advanced infrastructure
 
