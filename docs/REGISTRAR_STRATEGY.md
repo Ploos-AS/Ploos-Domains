@@ -15,9 +15,9 @@
 Before building a live adapter, obtain written confirmation of:
 
 1. Reseller/partner eligibility and whether Ploos AS may register and manage domains for its own end customers.
-2. API capabilities and permissions for live .no availability, pricing, registration, renewal, transfers, contacts and nameserver management; distinguish public/customer API from reseller APIs.
+2. API capabilities and permissions per supported TLD for availability, pricing, registration, renewal, transfers, contacts and nameserver management; distinguish public/customer API from reseller APIs.
 3. Authentication, credential scoping, rate limits, sandbox/test environment, webhooks or polling, and service availability.
-4. Domain ownership/registrant identity handling, Norid-specific eligibility and documentation requirements.
+4. Domain ownership/registrant identity handling and per-TLD registry requirements, including Norid-specific eligibility and documentation for .no.
 5. Wholesale/retail pricing, invoicing, VAT, refunds, settlement, support, abuse and liability responsibilities.
 6. Contractual and operational implications of future migration to a direct Norid registrar.
 
@@ -37,13 +37,21 @@ Keep domain identity, order state, customer ownership and provider references in
 
 ## Phased implementation
 
-1. Confirm Domeneshop commercial terms, API documentation and .no workflows.
+1. Confirm Domeneshop commercial terms, API documentation, supported TLD catalogue and per-TLD workflows.
 2. Add provider-neutral typed contracts and deterministic fake-provider tests.
-3. Implement authorized Domeneshop availability adapter with secure credentials, timeouts, rate limits and failure semantics.
+3. Implement authorized Domeneshop multi-TLD availability adapter with secure credentials, timeouts, rate limits and failure semantics.
 4. Add pricing/quote contract and transparent customer checkout; then idempotent registrar orders and reconciliation.
 5. Add renewals, transfer workflows and parking independently of registrar integration.
 6. Research Norid direct registrar accreditation, economics and operational requirements.
 7. When approved, add a direct Norid adapter, migrate **new** orders first, then offer controlled migration of existing portfolios where lawful and practical.
+
+## TLD scope and policy model
+
+- **Norway-first, multi-TLD from the start:** prioritize the .no buying experience but expose other TLDs supported by the contracted Domeneshop API where operationally ready. Do not hard-code .no as the only sellable TLD.
+- Keep a versioned TLD catalogue with provider support, eligibility rules, IDN policy, registration period, transfer/renewal capabilities and per-TLD price quoting.
+- An existing .no-only search validator is a narrow foundation, not the universal search API. Build a provider-neutral multi-TLD search layer without weakening .no-specific validation.
+- TLD availability, pricing and reseller permissions must be confirmed per extension; do not assume all Domeneshop retail TLDs are available through the reseller API.
+- Direct Norid registrar status in the future affects .no only; continue using Domeneshop or other providers for additional TLDs.
 
 ## Launch guardrails
 
