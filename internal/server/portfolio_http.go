@@ -47,7 +47,8 @@ func NewHandlerWithPortfolio(verifier auth.Verifier,resolver AuditIdentityResolv
  if verifier==nil||resolver==nil||lister==nil{return base}
  mux:=http.NewServeMux()
  limiter:=newAuditLimiter(60,60,time.Now)
- mux.Handle(PortfolioRoute,limiter.wrap(auth.Middleware(verifier,NewPortfolioHandler(resolver,lister))))
+ mux.Handle("GET /api/v1/organizations/{organizationID}/portfolio",limiter.wrap(auth.Middleware(verifier,NewPortfolioHandler(resolver,lister))))
+ mux.Handle("/api/v1/organizations/{organizationID}/portfolio",limiter.wrap(auth.Middleware(verifier,NewPortfolioHandler(resolver,lister))))
  mux.Handle("/",base)
  return mux
 }
