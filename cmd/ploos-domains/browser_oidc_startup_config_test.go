@@ -16,12 +16,12 @@ func TestBrowserOIDCOptInRejectsInvalidConfiguration(t *testing.T){
  }
 }
 
-func TestBrowserOIDCOptInValidConfigMissingDatabaseFailsClosed(t *testing.T){
+func TestBrowserOIDCOptInValidConfigDiscoveryFailsClosed(t *testing.T){
  setValidBrowserOIDCEnv(t)
  t.Setenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED","true")
  t.Setenv("PLOOS_AUDIT_API_ENABLED","false")
  handler,closeDB,err:=buildHandler(context.Background())
- if !errors.Is(err,errBrowserOIDCDatabase)||handler!=nil||closeDB!=nil{
+ if !errors.Is(err,errBrowserOIDCDiscovery)||handler!=nil||closeDB!=nil{
   t.Fatalf("incomplete OIDC wiring enabled: handler=%t closeDB=%t err=%v",handler!=nil,closeDB!=nil,err)
  }
 }
