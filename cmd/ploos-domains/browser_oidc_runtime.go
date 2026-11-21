@@ -5,6 +5,7 @@ import (
  "database/sql"
  "errors"
  "strings"
+ "sync"
  "time"
 
  "github.com/Ploos-AS/Ploos-Domains/internal/auth"
@@ -18,10 +19,15 @@ var errBrowserOIDCRuntime=errors.New("browser OIDC runtime initialization failed
 type browserOIDCRuntime struct{
  Handlers server.OIDCLoginHandlers
  DB *sql.DB
+ closeOnce sync.Once
+ closeErr error
 }
 func (r *browserOIDCRuntime)Close()error{
- if r==nil||r.DB==nil{return nil}
- return r.DB.Close()
+ if r==nil{return nil}
+ r.closeOnce.Do(func(){
+  if r.DB!=nil{r.closeErr=r.DB.Close()}
+ })
+ return r.closeErr
 }
 
 // initializeBrowserOIDCRuntime validates provider metadata and DB privileges,
@@ -29,7 +35,7 @@ func (r *browserOIDCRuntime)Close()error{
 // The caller must not mount these handlers until the full startup policy is
 // separately reviewed and enabled.
 func initializeBrowserOIDCRuntime(ctx context.Context,cfg server.OIDCDeploymentConfig,dsn string)(*browserOIDCRuntime,error){
- if ctx==nil||cfg.Validate()!=nil||strings.TrimSpace(dsn)==""{return nil,errBrowserOIDCRuntime}
+ if ctx==nil||ctx.Err()!=nil||cfg.Validate()!=nil||strings.TrimSpace(dsn)==""{return nil,errBrowserOIDCRuntime}
  probeCtx,cancel:=context.WithTimeout(ctx,10*time.Second)
  defer cancel()
  discovery:=server.OIDCDiscoveryClient{}
