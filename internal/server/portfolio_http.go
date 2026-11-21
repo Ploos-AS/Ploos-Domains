@@ -4,6 +4,7 @@ import (
  "context"
  "errors"
  "net/http"
+ "strconv"
  "time"
 
  "github.com/Ploos-AS/Ploos-Domains/internal/auth"
@@ -13,7 +14,7 @@ import (
 const PortfolioRoute = "GET /api/v1/organizations/{organizationID}/portfolio"
 
 type PortfolioLister interface {
- ListForUser(context.Context,string,string)([]domains.PortfolioEntry,error)
+ ListPageForUser(context.Context,string,string,int,string)(domains.PortfolioPage,error)
 }
 
 // NewPortfolioHandler requires auth.Middleware at the mounting boundary.
@@ -28,15 +29,26 @@ func NewPortfolioHandler(resolver AuditIdentityResolver,lister PortfolioLister)h
   if !ok||identity.Validate()!=nil {http.Error(w,"unauthorized",http.StatusUnauthorized);return}
   org:=r.PathValue("organizationID")
   if org=="" {http.Error(w,"invalid organization",http.StatusBadRequest);return}
-  if len(r.URL.Query())!=0 {http.Error(w,"unsupported query",http.StatusBadRequest);return}
+  values:=r.URL.Query()
+  for key,v:=range values {
+   if (key!="limit" && key!="cursor") || len(v)!=1 {http.Error(w,"invalid query",http.StatusBadRequest);return}
+  }
+  limit:=50
+  if raw:=values.Get("limit");raw!=""{
+   n,err:=strconv.Atoi(raw)
+   if err!=nil||n<1||n>100 {http.Error(w,"invalid limit",http.StatusBadRequest);return}
+   limit=n
+  }
+  cursor:=values.Get("cursor")
+  if len(cursor)>253 {http.Error(w,"invalid cursor",http.StatusBadRequest);return}
   user,err:=resolver.ResolveUserID(r.Context(),identity)
   if errors.Is(err,auth.ErrIdentityNotLinked){http.Error(w,"forbidden",http.StatusForbidden);return}
   if err!=nil {http.Error(w,"portfolio unavailable",http.StatusServiceUnavailable);return}
-  entries,err:=lister.ListForUser(r.Context(),user,org)
-  if errors.Is(err,domains.ErrInvalidPortfolioEntry){http.Error(w,"invalid organization",http.StatusBadRequest);return}
+  page,err:=lister.ListPageForUser(r.Context(),user,org,limit,cursor)
+  if errors.Is(err,domains.ErrInvalidPortfolioPage)||errors.Is(err,domains.ErrInvalidPortfolioEntry){http.Error(w,"invalid organization",http.StatusBadRequest);return}
   if err!=nil {http.Error(w,"portfolio unavailable",http.StatusServiceUnavailable);return}
-  if entries==nil {entries=[]domains.PortfolioEntry{}}
-  jsonResponse(w,http.StatusOK,map[string]any{"domains":entries})
+  if page.Entries==nil {page.Entries=[]domains.PortfolioEntry{}}
+  jsonResponse(w,http.StatusOK,page)
  })
 }
 
