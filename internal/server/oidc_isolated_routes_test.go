@@ -1,6 +1,7 @@
 package server
 
 import (
+ "context"
  "net/http"
  "net/http/httptest"
  "testing"
@@ -18,7 +19,7 @@ func isolatedOIDCRouter(handlers OIDCLoginHandlers)http.Handler{
 func TestIsolatedOIDCRoutesMethodAndHostBoundary(t *testing.T){
  cfg:=validOIDCDeploymentConfig()
  store:=&loginStartStore{}
- handlers,err:=PrepareOIDCLoginHandlers(t.Context(),cfg,&startupDiscovery{},store,startupCallbackDeps())
+ handlers,err:=PrepareOIDCLoginHandlers(context.Background(),cfg,&startupDiscovery{},store,startupCallbackDeps())
  if err!=nil{t.Fatal(err)}
  router:=isolatedOIDCRouter(handlers)
  for _,tc:=range []struct{name,method,path,origin string;want int}{
