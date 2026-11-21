@@ -2,13 +2,13 @@
 
 PR #39 introduced an inert adapter. This follow-up adds an explicit HTTPS-only, bounded-timeout connection configuration contract, **without creating an HTTP client or calling any endpoint**.
 
-## Verified facts vs open questions
+See [the public API capability audit](DOMENESHOP_API_AUDIT.md) for documented features and the outstanding registrar-commerce gap.\n\n## Verified facts vs open questions
 
 The architecture decision is to use Domeneshop first. **The following remain unverified** until reviewed against current official Domeneshop documentation and the commercial agreement:
 
 - Reseller permission and registration/renewal/transfer authority for Ploos AS.
 - Supported TLDs and capability differences by TLD.
-- Exact API base URL, endpoint paths, HTTP methods, authentication and response schemas.
+- Public v0 API documentation identifies HTTP Basic Auth and domain/DNS/invoice/forwarding endpoints. A separate registrar-commerce API, if any, is unverified.
 - API rate limits, sandbox availability, error codes, operational SLAs and terms.
 - Whether the normal customer API differs from the reseller/partner API.
 
