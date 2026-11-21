@@ -4,6 +4,8 @@ package server
 
 import (
  "context"
+
+ "github.com/Ploos-AS/Ploos-Domains/internal/auth"
  "os"
  "testing"
  "time"
@@ -31,4 +33,21 @@ func TestBrowserOIDCLiveProviderDiscovery(t *testing.T){
  if err:= (OIDCDiscoveryClient{}).Validate(ctx,cfg);err!=nil{
   t.Fatalf("live provider discovery validation failed: %v",err)
  }
+}
+
+// Verifies that the actual application OIDC verifier can initialize against
+// the configured provider. It does not authenticate or validate a test token.
+func TestBrowserOIDCLiveVerifierInitialization(t *testing.T){
+ if os.Getenv("PLOOS_TEST_LIVE_OIDC_ENABLED")!="true"{
+  t.Skip("live OIDC provider test requires explicit opt-in")
+ }
+ issuer:=os.Getenv("PLOOS_TEST_LIVE_OIDC_ISSUER")
+ clientID:=os.Getenv("PLOOS_TEST_LIVE_OIDC_CLIENT_ID")
+ if err:=auth.ValidateOIDCConfig(issuer,clientID);err!=nil{
+  t.Fatalf("invalid live verifier test configuration: %v",err)
+ }
+ ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second)
+ defer cancel()
+ verifier,err:=auth.NewOIDCVerifier(ctx,issuer,clientID)
+ if err!=nil||verifier==nil{t.Fatalf("OIDC verifier initialization failed: %v",err)}
 }
