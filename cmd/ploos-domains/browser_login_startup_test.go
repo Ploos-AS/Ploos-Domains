@@ -14,7 +14,7 @@ func TestBrowserOIDCLoginStartupFailsClosed(t *testing.T){
    t.Setenv("PLOOS_AUDIT_API_ENABLED","false")
    handler,closeDB,err:=buildHandler(context.Background())
    if !errors.Is(err,errBrowserLoginNotConfigured)||handler!=nil||closeDB!=nil{
-    t.Fatalf("unsafe opt-in: handler=%v closeDB=%v err=%v",handler,closeDB,err)
+    t.Fatalf("unsafe opt-in: handlerPresent=%t closeDBPresent=%t err=%v",handler!=nil,closeDB!=nil,err)
    }
   })
  }
