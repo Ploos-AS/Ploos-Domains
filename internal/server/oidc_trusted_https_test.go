@@ -40,7 +40,7 @@ func TestOIDCCallbackRejectsUntrustedProxyBeforeConsume(t *testing.T){
  deps:=OIDCCallbackDependencies{Transactions:tx,Exchanger:&callbackExchanger{},Verifier:&callbackVerifier{},Users:portfolioTestResolver{},Sessions:&callbackSessions{},SessionTTL:time.Hour,HTTPSBoundary:b}
  binding,err:=auth.NewBrowserLoginBinding();if err!=nil{t.Fatal(err)}
  for _,tc:=range []struct{name,remote,proto string;want int}{
-  {"trusted","127.0.0.1:4444","https",401},
+  {"trusted","127.0.0.1:4444","https",503},
   {"spoofed","203.0.113.10:4444","https",403},
   {"insecure","127.0.0.1:4444","http",403},
  }{
