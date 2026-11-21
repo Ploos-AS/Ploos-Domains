@@ -2,6 +2,10 @@ package main
 
 import (
  "errors"
+ "context"
+ "time"
+
+ "github.com/Ploos-AS/Ploos-Domains/internal/auth"
  "os"
  "path/filepath"
  "testing"
@@ -54,3 +58,12 @@ func TestBrowserOIDCCallbackWiringSetsExchanger(t *testing.T){
   t.Fatal("callback exchanger or TTL mismatch")
  }
 }
+
+type callbackTransactionStub struct{}
+func (callbackTransactionStub) Consume(context.Context,string,string)(auth.BrowserLoginTransaction,error){return auth.BrowserLoginTransaction{},nil}
+type callbackVerifierStub struct{}
+func (callbackVerifierStub) VerifyBrowserIDToken(context.Context,string,string)(auth.Identity,error){return auth.Identity{},nil}
+type callbackUserStub struct{}
+func (callbackUserStub) ResolveUserID(context.Context,auth.Identity)(string,error){return "",nil}
+type callbackSessionStub struct{}
+func (callbackSessionStub) Create(context.Context,string,string,time.Time,time.Duration)error{return nil}
