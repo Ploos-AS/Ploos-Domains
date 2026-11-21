@@ -2,6 +2,8 @@ package main
 
 import (
  "context"
+ "database/sql"
+ "sync"
  "errors"
  "testing"
 
@@ -23,4 +25,35 @@ func TestBrowserOIDCRuntimeFailsClosedOnInvalidInputs(t *testing.T){
 func TestBrowserOIDCRuntimeCloseNil(t *testing.T){
  var runtime *browserOIDCRuntime
  if err:=runtime.Close();err!=nil{t.Fatal(err)}
+}
+
+func TestBrowserOIDCRuntimeCloseConcurrentAndRepeated(t *testing.T){
+ db,err:=sql.Open("postgres","postgres://unused:unused@localhost:5432/unused")
+ if err!=nil{t.Fatal(err)}
+ runtime:=&browserOIDCRuntime{DB:db}
+ var wg sync.WaitGroup
+ for i:=0;i<16;i++{
+  wg.Add(1)
+  go func(){
+   defer wg.Done()
+   if err:=runtime.Close();err!=nil{t.Errorf("close: %v",err)}
+  }()
+ }
+ wg.Wait()
+ if err:=runtime.Close();err!=nil{t.Fatal(err)}
+ if err:=db.PingContext(context.Background());err==nil{
+  t.Fatal("runtime database still usable after close")
+ }
+}
+
+func TestBrowserOIDCRuntimeRejectsCanceledContextBeforeNetwork(t *testing.T){
+ setValidBrowserOIDCEnv(t)
+ cfg,err:=loadBrowserOIDCConfig()
+ if err!=nil{t.Fatal(err)}
+ ctx,cancel:=context.WithCancel(context.Background())
+ cancel()
+ runtime,err:=initializeBrowserOIDCRuntime(ctx,cfg,"postgres://unused")
+ if runtime!=nil||!errors.Is(err,errBrowserOIDCRuntime){
+  t.Fatalf("canceled initialization accepted: %v",err)
+ }
 }
