@@ -18,6 +18,7 @@ type OIDCLoginStartConfig struct{
  ClientID string
  RedirectURI string
  TTL time.Duration
+ HTTPSBoundary *TrustedHTTPSBoundary
 }
 
 // NewOIDCLoginStartHandler is intentionally NOT mounted by NewHandler.
@@ -37,7 +38,7 @@ func NewOIDCLoginStartHandler(cfg OIDCLoginStartConfig,store OIDCLoginTransactio
    return
   }
   // Reject cross-site POST and ambiguous/missing browser origin.
-  if r.TLS==nil||r.Header.Get("Origin")!="https://"+r.Host||r.Host==""{
+  if !oidcRequestIsHTTPS(r,cfg.HTTPSBoundary)||r.Header.Get("Origin")!="https://"+r.Host||r.Host==""{
    http.Error(w,"forbidden",http.StatusForbidden)
    return
   }

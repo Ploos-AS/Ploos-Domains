@@ -31,6 +31,7 @@ type OIDCCallbackDependencies struct{
  Users AuditIdentityResolver
  Sessions OIDCSessionWriter
  SessionTTL time.Duration
+ HTTPSBoundary *TrustedHTTPSBoundary
 }
 
 // NewOIDCCallbackHandler is NOT mounted by NewHandler. It requires a trusted
@@ -46,9 +47,7 @@ func NewOIDCCallbackHandler(d OIDCCallbackDependencies)http.Handler{
   if d.Transactions==nil||d.Exchanger==nil||d.Verifier==nil||d.Users==nil||d.Sessions==nil||(BrowserSessionConfig{TTL:d.SessionTTL}).Validate()!=nil{
    http.Error(w,"login unavailable",http.StatusServiceUnavailable);return
   }
-  // This primitive expects direct TLS. A reverse-proxy-aware mount must
-  // verify the trusted external HTTPS origin before using this handler.
-  if r.TLS==nil{http.Error(w,"forbidden",http.StatusForbidden);return}
+  if !oidcRequestIsHTTPS(r,d.HTTPSBoundary){http.Error(w,"forbidden",http.StatusForbidden);return}
   q:=r.URL.Query()
   if len(q)!=2||len(q["state"])!=1||len(q["code"])!=1||q.Get("state")==""||q.Get("code")==""{
    http.Error(w,"invalid callback",http.StatusBadRequest);return
