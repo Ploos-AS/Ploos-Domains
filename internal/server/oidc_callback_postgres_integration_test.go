@@ -28,7 +28,7 @@ func TestOIDCCallbackPostgresSessionLifecycle(t *testing.T){
  ctx,cancel:=context.WithTimeout(context.Background(),30*time.Second);defer cancel()
  if err:=db.PingContext(ctx);err!=nil{t.Fatal(err)}
  var userID string
- err=db.QueryRowContext(ctx,`INSERT INTO users(external_subject) VALUES($1) RETURNING id::text`,"oidc-callback-integration-"+time.Now().Format("20060102150405.000000000")).Scan(&userID)
+ err=db.QueryRowContext(ctx,`INSERT INTO users(id,external_subject) VALUES(gen_random_uuid(),$1) RETURNING id::text`,"oidc-callback-integration-"+time.Now().Format("20060102150405.000000000")).Scan(&userID)
  if err!=nil{t.Fatal(err)}
  t.Cleanup(func(){_,_=db.ExecContext(context.Background(),"DELETE FROM users WHERE id=$1",userID)})
  tx,err:=auth.NewBrowserLoginTransaction();if err!=nil{t.Fatal(err)}
