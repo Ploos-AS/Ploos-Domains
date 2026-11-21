@@ -38,6 +38,6 @@ func TestBrowserSessionStorePostgresLifecycle(t *testing.T){
  if err:=store.Revoke(ctx,first);err!=nil{t.Fatal(err)}
  if _,err:=store.Resolve(ctx,first);!errors.Is(err,ErrBrowserSessionInvalid){t.Fatalf("revoked session: %v",err)}
  if got,err:=store.Resolve(ctx,second);err!=nil||got!=userID{t.Fatalf("other session: %s %v",got,err)}
- if _,err:=db.ExecContext(ctx,"UPDATE browser_sessions SET expires_at=now()-interval '1 second' WHERE user_id=$1",userID);err!=nil{t.Fatal(err)}
+ if _,err:=db.ExecContext(ctx,"UPDATE browser_sessions SET created_at=now()-interval '2 hours', expires_at=now()-interval '1 second' WHERE user_id=$1",userID);err!=nil{t.Fatal(err)}
  if _,err:=store.Resolve(ctx,second);!errors.Is(err,ErrBrowserSessionInvalid){t.Fatalf("expired session: %v",err)}
 }
