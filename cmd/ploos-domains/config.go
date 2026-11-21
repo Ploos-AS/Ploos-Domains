@@ -33,6 +33,11 @@ func buildHandler(ctx context.Context)(http.Handler,func()error,error){
   // database initialization. Full wiring is not ready: always fail closed.
   oidcCfg,err:=loadBrowserOIDCConfig()
   if err!=nil{return nil,nil,err}
+  // Require a protected confidential-client secret before any network access.
+  // Do not log or retain its contents until handler wiring is implemented.
+  if _,err:=loadBrowserOIDCClientSecret(os.Getenv("PLOOS_BROWSER_OIDC_CLIENT_SECRET_FILE"));err!=nil{
+   return nil,nil,err
+  }
   // Validate trusted provider metadata before opening a database connection.
   // Browser login still cannot be mounted until secrets and handlers are wired.
   if err:=checkBrowserOIDCStartupDiscovery(ctx,oidcCfg,server.OIDCDiscoveryClient{});err!=nil{
