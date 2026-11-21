@@ -87,6 +87,8 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f db/migrations/000008_browser_sessions.up.sql
       - name: Apply OIDC login transaction schema
         run: psql -v ON_ERROR_STOP=1 -f db/migrations/000009_oidc_login_transactions.up.sql
+      - name: Verify restricted browser OIDC database role
+        run: psql -v ON_ERROR_STOP=1 -f db/security/test_browser_oidc_role.sql
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
