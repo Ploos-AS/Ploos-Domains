@@ -16,11 +16,18 @@ import (
 )
 
 var errAuditConfig = errors.New("invalid audit API configuration")
+var errBrowserLoginNotConfigured = errors.New("browser OIDC login is not configured for startup")
 
 // buildHandler is fail-closed: explicit opt-in requires a valid OIDC issuer,
 // audience and PostgreSQL DSN. Startup fails rather than silently exposing
 // a partially authenticated audit endpoint.
 func buildHandler(ctx context.Context)(http.Handler,func()error,error){
+ // Browser OIDC handlers are intentionally not mounted yet. Fail closed on
+ // any attempted opt-in instead of silently starting without login or
+ // accidentally exposing an incomplete authentication flow.
+ if os.Getenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED")!="" && os.Getenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED")!="false"{
+  return nil,nil,errBrowserLoginNotConfigured
+ }
  if os.Getenv("PLOOS_AUDIT_API_ENABLED")!="true"{
   return server.NewHandler(),func()error{return nil},nil
  }
