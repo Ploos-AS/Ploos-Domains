@@ -32,6 +32,11 @@ func buildHandler(ctx context.Context)(http.Handler,func()error,error){
   // Validate operator-supplied configuration before any future provider or
   // database initialization. Full wiring is not ready: always fail closed.
   if _,err:=loadBrowserOIDCConfig();err!=nil{return nil,nil,err}
+  // Readiness runs only after configuration validation. Never mount login
+  // routes until discovery, secrets and full handler wiring are reviewed.
+  if err:=checkBrowserOIDCStartupDatabase(ctx,os.Getenv("PLOOS_BROWSER_OIDC_DATABASE_URL"));err!=nil{
+   return nil,nil,err
+  }
   return nil,nil,errBrowserLoginNotConfigured
  default:
   return nil,nil,errBrowserLoginNotConfigured
