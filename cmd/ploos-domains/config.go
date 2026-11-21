@@ -46,6 +46,12 @@ func buildHandler(ctx context.Context)(http.Handler,func()error,error){
   if err:=checkBrowserOIDCStartupDatabase(ctx,os.Getenv("PLOOS_BROWSER_OIDC_DATABASE_URL"));err!=nil{
    return nil,nil,err
   }
+  // Build the complete runtime only after all independent readiness gates.
+  // Deliberately discard unmounted handlers and close the owned DB pool:
+  // browser login is not approved for route registration yet.
+  runtime,err:=initializeBrowserOIDCRuntime(ctx,oidcCfg,os.Getenv("PLOOS_BROWSER_OIDC_DATABASE_URL"))
+  if err!=nil{return nil,nil,err}
+  if err:=runtime.Close();err!=nil{return nil,nil,errBrowserOIDCRuntime}
   return nil,nil,errBrowserLoginNotConfigured
  default:
   return nil,nil,errBrowserLoginNotConfigured
