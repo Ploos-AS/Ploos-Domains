@@ -23,11 +23,11 @@ func (r portfolioTestResolver) ResolveUserID(_ context.Context,_ auth.Identity)(
  return "internal-user",nil
 }
 type portfolioTestLister struct{ err error; called *bool }
-func (l portfolioTestLister) ListForUser(_ context.Context,user,org string)([]domains.PortfolioEntry,error){
+func (l portfolioTestLister) ListPageForUser(_ context.Context,user,org string,limit int,cursor string)(domains.PortfolioPage,error){
  if l.called!=nil{*l.called=true}
- if user!="internal-user"||org!="org-a"{return nil,errors.New("unexpected scope")}
- if l.err!=nil{return nil,l.err}
- return []domains.PortfolioEntry{{OrganizationID:"org-a",Domain:"example.no",Registrar:"external",Status:domains.PortfolioUnknown}},nil
+ if user!="internal-user"||org!="org-a"{return domains.PortfolioPage{},errors.New("unexpected scope")}
+ if l.err!=nil{return domains.PortfolioPage{},l.err}
+ return domains.PortfolioPage{Entries:[]domains.PortfolioEntry{{OrganizationID:"org-a",Domain:"example.no",Registrar:"external",Status:domains.PortfolioUnknown}}},nil
 }
 func TestPortfolioHTTPAuthenticationAndErrors(t *testing.T){
  cases:=[]struct{name,authorization string;resolverErr,listerErr error;want int;calls bool}{
@@ -60,6 +60,10 @@ func TestPortfolioHTTPRejectsUnknownQueryAndWrongMethod(t *testing.T){
  for _,tc:=range []struct{method,url string;want int}{
   {"GET","/api/v1/organizations/org-a/portfolio?unexpected=1",400},
   {"POST","/api/v1/organizations/org-a/portfolio",405},
+  {"GET","/api/v1/organizations/org-a/portfolio?limit=101",400},
+  {"GET","/api/v1/organizations/org-a/portfolio?limit=0",400},
+  {"GET","/api/v1/organizations/org-a/portfolio?limit=abc",400},
+  {"GET","/api/v1/organizations/org-a/portfolio?limit=1&limit=2",400},
  }{
   req:=httptest.NewRequest(tc.method,tc.url,nil)
   req.Header.Set("Authorization","Bearer test-valid")
