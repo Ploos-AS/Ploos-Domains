@@ -13,7 +13,7 @@ func TestBrowserOIDCLoginStartupFailsClosed(t *testing.T){
    t.Setenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED",value)
    t.Setenv("PLOOS_AUDIT_API_ENABLED","false")
    handler,closeDB,err:=buildHandler(context.Background())
-   if !(errors.Is(err,errBrowserLoginNotConfigured)||errors.Is(err,errBrowserOIDCConfig))||handler!=nil||closeDB!=nil{
+   if !(errors.Is(err,errBrowserLoginNotConfigured)||errors.Is(err,errBrowserOIDCConfig)||errors.Is(err,errBrowserOIDCDatabase))||handler!=nil||closeDB!=nil{
     t.Fatalf("unsafe opt-in: handlerPresent=%t closeDBPresent=%t err=%v",handler!=nil,closeDB!=nil,err)
    }
   })
