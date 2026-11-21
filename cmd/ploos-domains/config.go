@@ -25,7 +25,15 @@ func buildHandler(ctx context.Context)(http.Handler,func()error,error){
  // Browser OIDC handlers are intentionally not mounted yet. Fail closed on
  // any attempted opt-in instead of silently starting without login or
  // accidentally exposing an incomplete authentication flow.
- if os.Getenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED")!="" && os.Getenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED")!="false"{
+ switch os.Getenv("PLOOS_BROWSER_OIDC_LOGIN_ENABLED"){
+ case "", "false":
+  // Login remains disabled; do not require browser OIDC configuration.
+ case "true":
+  // Validate operator-supplied configuration before any future provider or
+  // database initialization. Full wiring is not ready: always fail closed.
+  if _,err:=loadBrowserOIDCConfig();err!=nil{return nil,nil,err}
+  return nil,nil,errBrowserLoginNotConfigured
+ default:
   return nil,nil,errBrowserLoginNotConfigured
  }
  if os.Getenv("PLOOS_AUDIT_API_ENABLED")!="true"{
