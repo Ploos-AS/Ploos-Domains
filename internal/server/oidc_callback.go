@@ -55,8 +55,8 @@ func NewOIDCCallbackHandler(d OIDCCallbackDependencies)http.Handler{
   }
   binding,err:=auth.BrowserLoginBindingFromRequest(r)
   if err!=nil{http.Error(w,"invalid callback",http.StatusBadRequest);return}
-  // Clear binding on all subsequent outcomes. Consume is atomic and single-use.
-  defer auth.ClearBrowserLoginBindingCookie(w)
+  // Clear the binding before any response headers are written. Consume is atomic and single-use.
+  auth.ClearBrowserLoginBindingCookie(w)
   tx,err:=d.Transactions.Consume(r.Context(),q.Get("state"),binding)
   if err!=nil{http.Error(w,"invalid or expired login",http.StatusUnauthorized);return}
   rawIDToken,err:=d.Exchanger.ExchangeCode(r.Context(),q.Get("code"),tx.PKCEVerifier)
