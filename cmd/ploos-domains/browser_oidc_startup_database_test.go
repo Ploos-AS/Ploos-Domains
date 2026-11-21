@@ -18,6 +18,6 @@ func TestBrowserOIDCStartupRejectsDiscoveryBeforeDatabase(t *testing.T){
 }
 
 func TestBrowserOIDCStartupDatabaseNilAndEmpty(t *testing.T){
- if err:=checkBrowserOIDCStartupDatabase(context.Background(),"");!errors.Is(err,errBrowserOIDCDiscovery){t.Fatalf("empty DSN: %v",err)}
- if err:=checkBrowserOIDCStartupDatabase(nil,"postgres://invalid");!errors.Is(err,errBrowserOIDCDiscovery){t.Fatalf("nil context: %v",err)}
+ if err:=checkBrowserOIDCStartupDatabase(context.Background(),"");!errors.Is(err,errBrowserOIDCDatabase){t.Fatalf("empty DSN: %v",err)}
+ if err:=checkBrowserOIDCStartupDatabase(nil,"postgres://invalid");!errors.Is(err,errBrowserOIDCDatabase){t.Fatalf("nil context: %v",err)}
 }
