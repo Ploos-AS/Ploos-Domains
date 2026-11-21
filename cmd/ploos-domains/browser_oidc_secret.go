@@ -2,6 +2,7 @@ package main
 
 import (
  "errors"
+ "io"
  "os"
  "path/filepath"
  "strings"
@@ -10,7 +11,7 @@ import (
 var errBrowserOIDCSecret=errors.New("invalid browser OIDC client secret file")
 
 // loadBrowserOIDCClientSecret reads a dedicated local secret file. The path
-// must be absolute, a regular file, owned by the running UID and not
+// must be absolute, a regular file, not
 // accessible by group/other. Symlinks are rejected to prevent path swaps.
 func loadBrowserOIDCClientSecret(path string)(string,error){
  if path==""||!filepath.IsAbs(path)||filepath.Clean(path)!=path{return "",errBrowserOIDCSecret}
@@ -25,7 +26,7 @@ func loadBrowserOIDCClientSecret(path string)(string,error){
  if err!=nil||!opened.Mode().IsRegular()||!os.SameFile(info,opened){return "",errBrowserOIDCSecret}
  // The file must not change between metadata validation and read.
  raw:=make([]byte,opened.Size())
- n,err:=f.Read(raw)
+ n,err:=io.ReadFull(f,raw)
  if err!=nil||int64(n)!=opened.Size(){return "",errBrowserOIDCSecret}
  secret:=string(raw)
  if strings.TrimSpace(secret)!=secret||strings.ContainsAny(secret,"\x00\r\n")||secret==""{
